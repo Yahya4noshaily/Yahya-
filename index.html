@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>eo broker smart signal</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+    h1 {
+      text-align: center;
+      color: #0f0;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 15px;
+      background-color: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .history {
+      margin-top: 25px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📈 eo broker smart signal</h1>
+
+    <div id="signal-box">
+      <p id="recommendation">🔄 اضغط على الزر للحصول على التوصية...</p>
+      <p><strong>السعر:</strong> <span id="price">-</span></p>
+      <p><strong>Take Profit:</strong> <span id="tp">-</span></p>
+      <p><strong>Stop Loss:</strong> <span id="sl">-</span></p>
+      <p><strong>نسبة الثقة:</strong> <span id="confidence">-</span></p>
+    </div>
+
+    <button id="fetch-signal">🔁 تحليل يدوي</button>
+
+    <div class="history">
+      <h3>📋 سجل آخر التوصيات</h3>
+      <ul id="history-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById("fetch-signal");
+    const recommendation = document.getElementById("recommendation");
+    const price = document.getElementById("price");
+    const tp = document.getElementById("tp");
+    const sl = document.getElementById("sl");
+    const confidence = document.getElementById("confidence");
+    const historyList = document.getElementById("history-list");
+
+    function getRandomDirection() {
+      return Math.random() > 0.5 ? "🔼 شراء" : "🔽 بيع";
+    }
+
+    function getRandomPrice(base = 1.0950) {
+      return (base + (Math.random() - 0.5) * 0.002).toFixed(5);
+    }
+
+    function getRandomConfidence() {
+      return (80 + Math.random() * 15).toFixed(1) + "%";
+    }
+
+    function updateSignal() {
+      const dir = getRandomDirection();
+      const entry = getRandomPrice();
+      const takeProfit = (parseFloat(entry) + (dir.includes("شراء") ? 0.0003 : -0.0003)).toFixed(5);
+      const stopLoss = (parseFloat(entry) + (dir.includes("شراء") ? -0.0002 : 0.0002)).toFixed(5);
+      const conf = getRandomConfidence();
+
+      recommendation.textContent = `📊 التوصية: ${dir}`;
+      price.textContent = entry;
+      tp.textContent = takeProfit;
+      sl.textContent = stopLoss;
+      confidence.textContent = conf;
+
+      const time = new Date().toLocaleTimeString();
+      const log = document.createElement("li");
+      log.textContent = `${time} - ${dir} @ ${entry} 🎯 TP: ${takeProfit} / 🛑 SL: ${stopLoss} / 🔢 ${conf}`;
+      historyList.prepend(log);
+    }
+
+    btn.addEventListener("click", updateSignal);
+  </script>
+</body>
+</html>
