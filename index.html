@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>eo broker smart signal</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #111;
+      color: #eee;
+      font-family: 'Segoe UI', sans-serif;
+      direction: rtl;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #0ff;
+    }
+    .signal-box {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .label {
+      color: #aaa;
+      font-weight: bold;
+    }
+    .value {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #0ff;
+      color: #000;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .history {
+      background-color: #181818;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    input {
+      padding: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    #admin-form {
+      display: none;
+      background: #222;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📡 eo broker smart signal</h1>
+
+    <div class="signal-box" id="signalBox">
+      <div class="label">📈 التوصية:</div>
+      <div class="value" id="recommendation">جاري التحليل...</div>
+
+      <div class="label">💱 السعر:</div>
+      <div class="value" id="price">-</div>
+
+      <div class="label">🎯 الهدف:</div>
+      <div class="value" id="tp">-</div>
+
+      <div class="label">🛑 وقف الخسارة:</div>
+      <div class="value" id="sl">-</div>
+
+      <div class="label">⏱ مدة الصفقة:</div>
+      <div class="value" id="duration">-</div>
+
+      <div class="label">📊 نسبة الثقة:</div>
+      <div class="value" id="confidence">-</div>
+    </div>
+
+    <button onclick="generateSignal()">🔁 تحديث التوصية</button>
+
+    <div class="history">
+      <div class="label">📋 سجل التوصيات:</div>
+      <ul id="historyList"></ul>
+    </div>
+
+    <button onclick="promptAdmin()">🔓 دخول المشرف</button>
+
+    <div id="admin-form">
+      <input type="text" id="manualType" placeholder="شراء / بيع">
+      <input type="text" id="manualPrice" placeholder="السعر">
+      <input type="text" id="manualTP" placeholder="Take Profit">
+      <input type="text" id="manualSL" placeholder="Stop Loss">
+      <input type="text" id="manualDuration" placeholder="مدة الصفقة">
+      <input type="text" id="manualConfidence" placeholder="نسبة الثقة">
+      <button onclick="submitManual()">✅ نشر التوصية اليدوية</button>
+    </div>
+  </div>
+
+  <script>
+    function randomDir() {
+      return Math.random() > 0.5 ? "شراء" : "بيع";
+    }
+    function randomPrice() {
+      return (1.0900 + Math.random() * 0.002).toFixed(5);
+    }
+    function randomConfidence() {
+      return (80 + Math.random() * 15).toFixed(1) + "%";
+    }
+    function randomDuration() {
+      return Math.random() > 0.5 ? "30 ثانية" : "60 ثانية";
+    }
+
+    function generateSignal() {
+      const type = randomDir();
+      const entry = randomPrice();
+      const tp = (parseFloat(entry) + (type === "شراء" ? 0.0003 : -0.0003)).toFixed(5);
+      const sl = (parseFloat(entry) + (type === "شراء" ? -0.0002 : 0.0002)).toFixed(5);
+      const duration = randomDuration();
+      const confidence = randomConfidence();
+
+      document.getElementById("recommendation").textContent = type;
+      document.getElementById("price").textContent = entry;
+      document.getElementById("tp").textContent = tp;
+      document.getElementById("sl").textContent = sl;
+      document.getElementById("duration").textContent = duration;
+      document.getElementById("confidence").textContent = confidence;
+
+      const log = `${type} @ ${entry} 🎯 ${tp} / 🛑 ${sl} / ⏱ ${duration} / 📊 ${confidence}`;
+      const li = document.createElement("li");
+      li.textContent = log;
+      document.getElementById("historyList").prepend(li);
+    }
+
+    function promptAdmin() {
+      const pin = prompt("🔐 أدخل رمز الدخول:");
+      if (pin === "2025") {
+        document.getElementById("admin-form").style.display = "block";
+      } else {
+        alert("❌ رمز خاطئ!");
+      }
+    }
+
+    function submitManual() {
+      const type = document.getElementById("manualType").value;
+      const entry = document.getElementById("manualPrice").value;
+      const tp = document.getElementById("manualTP").value;
+      const sl = document.getElementById("manualSL").value;
+      const duration = document.getElementById("manualDuration").value;
+      const confidence = document.getElementById("manualConfidence").value;
+
+      document.getElementById("recommendation").textContent = type;
+      document.getElementById("price").textContent = entry;
+      document.getElementById("tp").textContent = tp;
+      document.getElementById("sl").textContent = sl;
+      document.getElementById("duration").textContent = duration;
+      document.getElementById("confidence").textContent = confidence;
+
+      const log = `${type} @ ${entry} 🎯 ${tp} / 🛑 ${sl} / ⏱ ${duration} / 📊 ${confidence}`;
+      const li = document.createElement("li");
+      li.textContent = log;
+      document.getElementById("historyList").prepend(li);
+    }
+
+    // توليد أول توصية تلقائيًا
+    generateSignal();
+  </script>
+</body>
+</html>
